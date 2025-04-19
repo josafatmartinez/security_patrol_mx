@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:security_patrol_mx/utils/app_theme.dart';
 
 class StatusSwitchTile extends StatelessWidget {
   final String title;
   final bool value;
   final ValueChanged<bool> onChanged;
-  final Color activeColor;
-  final Color inactiveColor;
   final String activeText;
   final String inactiveText;
 
@@ -14,14 +13,15 @@ class StatusSwitchTile extends StatelessWidget {
     required this.title,
     required this.value,
     required this.onChanged,
-    this.activeColor = Colors.green,
-    this.inactiveColor = Colors.red,
     this.activeText = 'Activo',
     this.inactiveText = 'Inactivo',
   });
 
   @override
   Widget build(BuildContext context) {
+    final activeColor = AppTheme.successColor;
+    final inactiveColor = AppTheme.errorColor;
+
     return SwitchListTile(
       title: Text(title),
       value: value,

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../utils/app_theme.dart';
 
 class StatusIndicator extends StatelessWidget {
   final bool isActive;
   final String activeText;
   final String inactiveText;
-  final Color activeColor;
-  final Color inactiveColor;
   final double size;
 
   const StatusIndicator({
@@ -13,13 +12,14 @@ class StatusIndicator extends StatelessWidget {
     required this.isActive,
     this.activeText = 'Activo',
     this.inactiveText = 'Inactivo',
-    this.activeColor = Colors.green,
-    this.inactiveColor = Colors.red,
     this.size = 10.0,
   });
 
   @override
   Widget build(BuildContext context) {
+    final activeColor = AppTheme.successColor;
+    final inactiveColor = AppTheme.inactiveGuardColor;
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [

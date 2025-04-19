@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:security_patrol_mx/utils/app_theme.dart';
 
 class ErrorMessage extends StatelessWidget {
   final String message;
@@ -18,7 +19,7 @@ class ErrorMessage extends StatelessWidget {
       padding: padding ?? const EdgeInsets.only(top: 16),
       child: Text(
         message,
-        style: style ?? TextStyle(color: Theme.of(context).colorScheme.error),
+        style: style ?? TextStyle(color: AppTheme.errorColor),
       ),
     );
   }
