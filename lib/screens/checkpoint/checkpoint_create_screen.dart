@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:security_patrol_mx/utils/app_theme.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -103,17 +105,61 @@ class _CheckpointCreateScreenState extends State<CheckpointCreateScreen> {
     }
   }
 
-  void _getCurrentLocation() {
-    // In a real app, you would use a location plugin like geolocator
-    // For this example, we'll use random coordinates near Mexico City
-    final random = math.Random();
-    final lat = 19.4326 + (random.nextDouble() - 0.5) * 0.1;
-    final lon = -99.1332 + (random.nextDouble() - 0.5) * 0.1;
+  Future<void> _getCurrentLocation() async {
+    try {
+      // Request location permissions
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Permisos de ubicación denegados')),
+          );
+          return;
+        }
+      }
 
-    setState(() {
-      _latitudeController.text = lat.toStringAsFixed(6);
-      _longitudeController.text = lon.toStringAsFixed(6);
-    });
+      if (permission == LocationPermission.deniedForever) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Los permisos de ubicación están permanentemente denegados, no se puede solicitar',
+            ),
+          ),
+        );
+        return;
+      }
+
+      // Show loading indicator
+      setState(() {
+        _latitudeController.text = 'Obteniendo...';
+        _longitudeController.text = 'Obteniendo...';
+      });
+
+      // Get current position
+      final Position position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 10),
+        ),
+      );
+
+      // Update text controllers with the real location
+      setState(() {
+        _latitudeController.text = position.latitude.toStringAsFixed(6);
+        _longitudeController.text = position.longitude.toStringAsFixed(6);
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error al obtener ubicación: $e')));
+
+      // Reset to default values on error
+      setState(() {
+        _latitudeController.text = '19.432608';
+        _longitudeController.text = '-99.133209';
+      });
+    }
   }
 
   Future<void> _downloadQRCode() async {
@@ -131,11 +177,12 @@ class _CheckpointCreateScreenState extends State<CheckpointCreateScreen> {
     try {
       // Solicitar permisos
       if (Platform.isAndroid) {
-        final statuses = await [
-          Permission.photos,
-          Permission.mediaLibrary,
-          Permission.storage,
-        ].request();
+        final statuses =
+            await [
+              Permission.photos,
+              Permission.mediaLibrary,
+              Permission.storage,
+            ].request();
         if (statuses.values.any((status) => !status.isGranted)) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -464,18 +511,40 @@ class _CheckpointCreateScreenState extends State<CheckpointCreateScreen> {
                                   version: QrVersions.auto,
                                   size: 200.0,
                                   backgroundColor: Colors.white,
+                                  padding: const EdgeInsets.all(10),
+                                  eyeStyle: const QrEyeStyle(
+                                    eyeShape: QrEyeShape.square,
+                                    color: Colors.black,
+                                  ),
+                                  dataModuleStyle: const QrDataModuleStyle(
+                                    dataModuleShape: QrDataModuleShape.circle,
+                                    color: Colors.black,
+                                  ),
+                                  embeddedImage: const AssetImage(
+                                    'assets/images/logo_small.png',
+                                  ),
+                                  embeddedImageStyle: QrEmbeddedImageStyle(
+                                    size: const Size(40, 40),
+                                  ),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  '${_nameController.text}',
+                                  _nameController.text,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
+                                    color: AppTheme.textColor,
+                                    fontSize: 16,
                                   ),
                                 ),
                                 Text(
-                                  'ID: ${_qrCodeData!.substring(0, _qrCodeData!.indexOf(','))}',
-                                  style: const TextStyle(fontSize: 12),
+                                  _locationController.text,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: AppTheme.textColor,
+                                    fontSize: 12,
+                                  ),
                                 ),
+                                const SizedBox(height: 4),
                               ],
                             ),
                           ),
@@ -581,7 +650,7 @@ class _CheckpointCreateScreenState extends State<CheckpointCreateScreen> {
                 icon: const Icon(Icons.save),
                 label: const Text('Guardar Checkpoint'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
+                  backgroundColor: AppTheme.successColor,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
