@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../models/user_model.dart';
 import '../../services/auth_service.dart';
 import '../auth/login_screen.dart';
+import '../../widgets/common/theme_switcher.dart';
 
 class ProfileScreen extends StatefulWidget {
   final User user;
@@ -179,6 +180,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
 
               const SizedBox(height: 32),
+
+              // Sección Apariencia
+              const Text(
+                'Apariencia',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+
+              // Selector de tema (claro/oscuro)
+              const ThemeSwitcher(),
+
+              const Divider(),
 
               // Sección Acciones
               const Text(

@@ -38,7 +38,8 @@ class ActionCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: AppTheme.textColor,
+                  // Use the current theme's text color instead of static color
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ],
