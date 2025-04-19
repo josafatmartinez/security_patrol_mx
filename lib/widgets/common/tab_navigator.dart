@@ -7,6 +7,7 @@ class TabNavigator extends StatelessWidget {
   final Function(int) onTabTap;
   final Color? selectedColor;
   final Color? unselectedColor;
+  final Color? backgroundColor;
 
   const TabNavigator({
     super.key,
@@ -15,15 +16,18 @@ class TabNavigator extends StatelessWidget {
     required this.onTabTap,
     this.selectedColor,
     this.unselectedColor,
+    this.backgroundColor,
   });
 
   @override
   Widget build(BuildContext context) {
-    final selected = selectedColor ?? Theme.of(context).colorScheme.primary;
-    final unselected = unselectedColor ?? Colors.grey;
+    // Usar los mismos colores que la AppBar por defecto
+    final selected = selectedColor ?? Colors.white;
+    final unselected = unselectedColor ?? Colors.white70;
+    final bgColor = backgroundColor ?? Theme.of(context).colorScheme.primary;
 
     return Container(
-      color: Theme.of(context).colorScheme.primaryContainer,
+      color: bgColor,
       child: Row(
         children: List.generate(tabs.length, (index) {
           final isSelected = selectedIndex == index;

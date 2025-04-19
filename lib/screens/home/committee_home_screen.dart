@@ -4,8 +4,8 @@ import '../../models/user_model.dart';
 import '../../models/guard_model.dart';
 import '../../models/checkpoint_model.dart';
 import '../../widgets/home/welcome_card.dart';
-import '../../widgets/home/action_card.dart';
 import '../../widgets/home/activity_list.dart';
+import '../../widgets/home/admin_actions_grid.dart';
 import '../../widgets/common/common_widgets.dart';
 import '../../utils/form_validator.dart';
 import '../../utils/date_time_formatter.dart';
@@ -216,81 +216,44 @@ class _CommitteeHomeScreenState extends State<CommitteeHomeScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      GridView.count(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        children: [
-                          ActionCard(
-                            title: 'Gestionar Guardias',
-                            icon: Icons.people_alt,
-                            color: Colors.blue,
-                            onTap: () {
-                              _toggleAdminPanel(true);
-                              setState(() {
-                                _selectedAdminTab = 0; // Pestaña de Guardias
-                              });
-                            },
-                          ),
-                          ActionCard(
-                            title: 'Configurar Checkpoints',
-                            icon: Icons.location_on,
-                            color: Colors.orange,
-                            onTap: () {
-                              _toggleAdminPanel(true);
-                              setState(() {
-                                _selectedAdminTab = 1; // Pestaña de Checkpoints
-                              });
-                            },
-                          ),
-                          ActionCard(
-                            title: 'Ver Reportes',
-                            icon: Icons.assessment,
-                            color: Colors.green,
-                            onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Ver reportes')),
-                              );
-                            },
-                          ),
-                          ActionCard(
-                            title: 'Ver Actividades',
-                            icon: Icons.history,
-                            color: Colors.deepPurple,
-                            onTap: () {
-                              _toggleAdminPanel(true);
-                              setState(() {
-                                _selectedAdminTab = 2; // Pestaña de Actividades
-                              });
-                            },
-                          ),
-                          ActionCard(
-                            title: 'Gestionar Usuarios',
-                            icon: Icons.manage_accounts,
-                            color: Colors.indigo,
-                            onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Gestión de usuarios'),
-                                ),
-                              );
-                            },
-                          ),
-                          ActionCard(
-                            title: 'Programar Rondas',
-                            icon: Icons.schedule,
-                            color: Colors.purple,
-                            onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Programar rondas'),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
+
+                      // Usando el widget extraído para mejorar la legibilidad
+                      AdminActionsGrid(
+                        onManageGuards: () {
+                          _toggleAdminPanel(true);
+                          setState(() {
+                            _selectedAdminTab = 0; // Pestaña de Guardias
+                          });
+                        },
+                        onConfigureCheckpoints: () {
+                          _toggleAdminPanel(true);
+                          setState(() {
+                            _selectedAdminTab = 1; // Pestaña de Checkpoints
+                          });
+                        },
+                        onViewReports: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Ver reportes')),
+                          );
+                        },
+                        onViewActivities: () {
+                          _toggleAdminPanel(true);
+                          setState(() {
+                            _selectedAdminTab = 2; // Pestaña de Actividades
+                          });
+                        },
+                        onManageUsers: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Gestión de usuarios'),
+                            ),
+                          );
+                        },
+                        onScheduleRounds: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Programar rondas')),
+                          );
+                        },
                       ),
 
                       const SizedBox(height: 24),
