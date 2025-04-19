@@ -20,15 +20,23 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // Obtiene el controlador de tema actual
     final themeController = Provider.of<ThemeController>(context);
+    // Detecta el tema del sistema
+    final Brightness platformBrightness = MediaQuery.platformBrightnessOf(
+      context,
+    );
+    final bool isDarkModeSystem = platformBrightness == Brightness.dark;
+
+    // Decide qué tema usar basado en las preferencias
+    final bool useDarkTheme =
+        themeController.useSystemTheme
+            ? isDarkModeSystem
+            : themeController.isDarkMode;
 
     return MaterialApp(
       title: 'Security Patrol',
       debugShowCheckedModeBanner: false,
-      // Usa tema oscuro o claro según el estado del controlador
-      theme:
-          themeController.isDarkMode
-              ? AppTheme.darkTheme()
-              : AppTheme.lightTheme(),
+      // Aplica el tema según la lógica actualizada
+      theme: useDarkTheme ? AppTheme.darkTheme() : AppTheme.lightTheme(),
       home: const LoginScreen(),
     );
   }
