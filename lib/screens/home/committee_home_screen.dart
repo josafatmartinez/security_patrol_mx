@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:security_patrol_mx/screens/checkpoint/checkpoint_create_screen.dart';
 import '../../models/user_model.dart';
 import '../../models/guard_model.dart';
 import '../../models/checkpoint_model.dart';
@@ -980,7 +981,25 @@ class _CommitteeHomeScreenState extends State<CommitteeHomeScreen> {
     if (_selectedAdminTab == 0) {
       _showGuardDialog();
     } else if (_selectedAdminTab == 1) {
-      _showCheckpointDialog();
+      // Navigate to the checkpoint creation screen instead of showing a dialog
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder:
+              (context) => CheckpointCreateScreen(
+                onCheckpointCreated: (newCheckpoint) {
+                  setState(() {
+                    _checkpoints.add(newCheckpoint);
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Checkpoint con QR agregado correctamente'),
+                    ),
+                  );
+                },
+              ),
+        ),
+      );
     }
   }
 

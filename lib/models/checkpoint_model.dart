@@ -6,6 +6,9 @@ class Checkpoint {
   final bool isActive;
   final DateTime? lastChecked;
   final String? lastGuardId;
+  final double? latitude;
+  final double? longitude;
+  final String? qrCode;
 
   Checkpoint({
     required this.id,
@@ -15,6 +18,9 @@ class Checkpoint {
     this.isActive = true,
     this.lastChecked,
     this.lastGuardId,
+    this.latitude,
+    this.longitude,
+    this.qrCode,
   });
 
   factory Checkpoint.fromJson(Map<String, dynamic> json) {
@@ -29,6 +35,9 @@ class Checkpoint {
               ? DateTime.parse(json['lastChecked'])
               : null,
       lastGuardId: json['lastGuardId'],
+      latitude: json['latitude'],
+      longitude: json['longitude'],
+      qrCode: json['qrCode'],
     );
   }
 
@@ -41,6 +50,9 @@ class Checkpoint {
       'isActive': isActive,
       'lastChecked': lastChecked?.toIso8601String(),
       'lastGuardId': lastGuardId,
+      'latitude': latitude,
+      'longitude': longitude,
+      'qrCode': qrCode,
     };
   }
 }

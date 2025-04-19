@@ -33,4 +33,14 @@ class FormValidator {
   static bool areAllFieldsValid(Map<String, String?> fields) {
     return !fields.values.any((errorMessage) => errorMessage != null);
   }
+
+  static String? validateNumber(String? value, String fieldName) {
+    if (value == null || value.isEmpty) {
+      return 'Por favor ingrese $fieldName';
+    }
+    if (double.tryParse(value) == null) {
+      return 'Ingrese un número válido para $fieldName';
+    }
+    return null;
+  }
 }
