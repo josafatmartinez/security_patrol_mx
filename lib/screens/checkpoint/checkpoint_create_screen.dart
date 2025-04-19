@@ -14,7 +14,6 @@ import 'package:path_provider/path_provider.dart';
 import '../../models/checkpoint_model.dart';
 import '../../utils/form_validator.dart';
 import '../../widgets/common/common_widgets.dart';
-import 'dart:math' as math;
 
 class CheckpointCreateScreen extends StatefulWidget {
   final Function(Checkpoint) onCheckpointCreated;
