@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import '../models/patrol_model.dart';
-import '../models/checkpoint_model.dart';
 import 'package:geolocator/geolocator.dart';
 
 class PatrolService {
@@ -97,10 +96,13 @@ class PatrolService {
 
   // Obtener la patrulla activa para un guardia específico
   Future<Patrol?> getActivePatrolForGuard(String guardId) async {
-    return _activePatrols.firstWhere(
-      (patrol) => patrol.guardId == guardId && !patrol.isCompleted,
-      orElse: () => null!,
-    );
+    try {
+      return _activePatrols.firstWhere(
+        (patrol) => patrol.guardId == guardId && !patrol.isCompleted,
+      );
+    } catch (e) {
+      return null;
+    }
   }
 
   // Obtener las patrullas completadas para un guardia específico
