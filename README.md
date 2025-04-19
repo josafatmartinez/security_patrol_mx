@@ -72,7 +72,7 @@ lib/
 
 1. Clona el repositorio
    ```bash
-   git clone https://github.com/tu-usuario/security_patrol_mx.git
+   git clone https://github.com/josafatmartinez/security_patrol_mx.git
    ```
 
 2. Navega al directorio del proyecto
