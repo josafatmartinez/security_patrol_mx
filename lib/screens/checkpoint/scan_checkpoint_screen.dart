@@ -102,9 +102,7 @@ class _ScanCheckpointScreenState extends State<ScanCheckpointScreen> {
       );
 
       // Si no hay una patrulla activa, crear una nueva
-      if (_activePatrol == null) {
-        _activePatrol = await _patrolService.startPatrol(widget.user.id ?? "");
-      }
+      _activePatrol ??= await _patrolService.startPatrol(widget.user.id ?? "");
 
       // Registrar la visita en la patrulla activa
       if (_activePatrol != null) {
