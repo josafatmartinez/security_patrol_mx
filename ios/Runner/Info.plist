@@ -49,6 +49,10 @@
 	<string>Se necesita acceso a tu ubicación para rastrear el recorrido durante las patrullas</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Se necesita acceso a tu ubicación en segundo plano para el seguimiento continuo durante las patrullas</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Esta app necesita acceso para guardar los códigos QR en la galería</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Esta app necesita acceso para guardar los códigos QR en la galería</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
