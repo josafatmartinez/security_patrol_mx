@@ -1,12 +1,16 @@
 // filepath: /home/josafatmartinez/Dev/security_patrol_mx/security_patrol_mx/lib/screens/home/guard_home_screen.dart
 import 'package:flutter/material.dart';
 import '../../models/user_model.dart';
+import '../../models/checkpoint_model.dart';
+import '../../models/patrol_model.dart';
 import '../../widgets/home/welcome_card.dart';
 import '../../widgets/home/action_card.dart';
 import '../../widgets/home/activity_list.dart';
 import '../../widgets/common/common_widgets.dart';
+import '../../services/patrol_service.dart';
 import '../profile/profile_screen.dart';
 import '../checkpoint/scan_checkpoint_screen.dart';
+import '../checkpoint/patrol_map_screen.dart';
 
 class GuardHomeScreen extends StatefulWidget {
   final User user;
@@ -19,6 +23,32 @@ class GuardHomeScreen extends StatefulWidget {
 
 class _GuardHomeScreenState extends State<GuardHomeScreen> {
   int _selectedIndex = 0;
+  final PatrolService _patrolService = PatrolService();
+  Patrol? _activePatrol;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkActivePatrol();
+  }
+
+  // Verificar si hay una patrulla activa para este guardia
+  Future<void> _checkActivePatrol() async {
+    setState(() {
+    });
+
+    try {
+      final patrol = await _patrolService.getActivePatrolForGuard(
+        widget.user.id ?? '',
+      );
+      setState(() {
+        _activePatrol = patrol;
+      });
+    } catch (e) {
+      setState(() {
+      });
+    }
+  }
 
   void _onNavItemTapped(int index) {
     if (index == 3) {
@@ -30,11 +60,68 @@ class _GuardHomeScreenState extends State<GuardHomeScreen> {
           builder: (context) => ProfileScreen(user: widget.user),
         ),
       );
+    } else if (index == 1) {
+      // Índice para la pestaña de Mapa
+      _navigateToMapScreen();
     } else {
       setState(() {
         _selectedIndex = index;
       });
     }
+  }
+
+  // Navegar a la pantalla de mapa
+  void _navigateToMapScreen() {
+    // Lista de checkpoints demo - en una app real se obtendrían de una API
+    final checkpoints = [
+      Checkpoint(
+        id: '1',
+        name: 'Entrada Principal',
+        location: 'Zona A',
+        description: 'Entrada principal del edificio',
+        latitude: 19.432608,
+        longitude: -99.133209,
+      ),
+      Checkpoint(
+        id: '2',
+        name: 'Sector B',
+        location: 'Zona B',
+        description: 'Sector B - Oficinas administrativas',
+        latitude: 19.434608,
+        longitude: -99.135209,
+      ),
+      Checkpoint(
+        id: '3',
+        name: 'Almacén',
+        location: 'Zona C',
+        description: 'Almacén de productos',
+        latitude: 19.431608,
+        longitude: -99.134209,
+      ),
+      Checkpoint(
+        id: '4',
+        name: 'Estacionamiento',
+        location: 'Zona D',
+        description: 'Estacionamiento de empleados',
+        latitude: 19.433608,
+        longitude: -99.132209,
+      ),
+    ];
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => PatrolMapScreen(
+              user: widget.user,
+              checkpoints: checkpoints,
+              activePatrol: _activePatrol,
+            ),
+      ),
+    ).then((_) {
+      // Actualizar la patrulla activa cuando regrese de la pantalla de mapa
+      _checkActivePatrol();
+    });
   }
 
   @override
@@ -126,9 +213,7 @@ class _GuardHomeScreenState extends State<GuardHomeScreen> {
                     icon: Icons.route,
                     color: Colors.green,
                     onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Ver ruta de patrullaje')),
-                      );
+                      _navigateToMapScreen();
                     },
                   ),
                   ActionCard(

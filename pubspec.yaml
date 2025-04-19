@@ -38,6 +38,11 @@ dependencies:
   qr_flutter: ^4.1.0
   shared_preferences: ^2.2.2
   provider: ^6.1.1
+  # Mapa y geolocalización
+  flutter_map: ^6.0.1
+  latlong2: ^0.9.0
+  location: ^5.0.3
+  geolocator: ^11.0.0
 
 dev_dependencies:
   flutter_test:

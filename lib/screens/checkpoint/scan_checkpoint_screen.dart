@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../models/user_model.dart';
 import '../../models/checkpoint_model.dart';
+import '../../models/patrol_model.dart';
 import '../../services/checkpoint_service.dart';
+import '../../services/patrol_service.dart';
 
 class ScanCheckpointScreen extends StatefulWidget {
   final User user;
@@ -15,6 +17,7 @@ class ScanCheckpointScreen extends StatefulWidget {
 
 class _ScanCheckpointScreenState extends State<ScanCheckpointScreen> {
   final CheckpointService _checkpointService = CheckpointService();
+  final PatrolService _patrolService = PatrolService();
   final MobileScannerController _scannerController = MobileScannerController();
 
   bool _isProcessing = false;
@@ -22,6 +25,27 @@ class _ScanCheckpointScreenState extends State<ScanCheckpointScreen> {
   String? _errorMessage;
   final TextEditingController _notesController = TextEditingController();
   bool _hasIncident = false;
+  Patrol? _activePatrol;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkActivePatrol();
+  }
+
+  // Verificar si hay una patrulla activa para este guardia
+  Future<void> _checkActivePatrol() async {
+    try {
+      final patrol = await _patrolService.getActivePatrolForGuard(
+        widget.user.id ?? '',
+      );
+      setState(() {
+        _activePatrol = patrol;
+      });
+    } catch (e) {
+      // Manejar el error silenciosamente, ya que si no hay patrulla activa podemos crear una
+    }
+  }
 
   @override
   void dispose() {
@@ -66,6 +90,7 @@ class _ScanCheckpointScreenState extends State<ScanCheckpointScreen> {
     });
 
     try {
+      // Primero, registrar en el servicio de checkpoint
       await _checkpointService.registerVisit(
         checkpointId: _scannedCheckpoint!.id,
         guardId: widget.user.id ?? "",
@@ -75,6 +100,25 @@ class _ScanCheckpointScreenState extends State<ScanCheckpointScreen> {
                 : _notesController.text.trim(),
         hasIncident: _hasIncident,
       );
+
+      // Si no hay una patrulla activa, crear una nueva
+      if (_activePatrol == null) {
+        _activePatrol = await _patrolService.startPatrol(widget.user.id ?? "");
+      }
+
+      // Registrar la visita en la patrulla activa
+      if (_activePatrol != null) {
+        await _patrolService.registerCheckpointVisit(
+          patrolId: _activePatrol!.id,
+          checkpointId: _scannedCheckpoint!.id,
+          guardId: widget.user.id ?? "",
+          notes:
+              _notesController.text.trim().isEmpty
+                  ? null
+                  : _notesController.text.trim(),
+          hasIncident: _hasIncident,
+        );
+      }
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

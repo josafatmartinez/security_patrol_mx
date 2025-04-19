@@ -43,6 +43,12 @@
 	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>Se necesita acceso a la cámara para escanear códigos QR de los checkpoints</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Se necesita acceso a tu ubicación para registrar los puntos de control durante la patrulla</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Se necesita acceso a tu ubicación para rastrear el recorrido durante las patrullas</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Se necesita acceso a tu ubicación en segundo plano para el seguimiento continuo durante las patrullas</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
