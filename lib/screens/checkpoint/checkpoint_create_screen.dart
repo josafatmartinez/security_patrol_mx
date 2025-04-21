@@ -111,6 +111,7 @@ class _CheckpointCreateScreenState extends State<CheckpointCreateScreen> {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Permisos de ubicación denegados')),
           );
@@ -119,6 +120,7 @@ class _CheckpointCreateScreenState extends State<CheckpointCreateScreen> {
       }
 
       if (permission == LocationPermission.deniedForever) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
@@ -143,12 +145,17 @@ class _CheckpointCreateScreenState extends State<CheckpointCreateScreen> {
         ),
       );
 
+      // Check if widget is still mounted before updating state
+      if (!mounted) return;
+
       // Update text controllers with the real location
       setState(() {
         _latitudeController.text = position.latitude.toStringAsFixed(6);
         _longitudeController.text = position.longitude.toStringAsFixed(6);
       });
     } catch (e) {
+      if (!mounted) return;
+
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Error al obtener ubicación: $e')));
@@ -183,6 +190,7 @@ class _CheckpointCreateScreenState extends State<CheckpointCreateScreen> {
               Permission.storage,
             ].request();
         if (statuses.values.any((status) => !status.isGranted)) {
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Se requieren permisos para guardar el código QR'),
@@ -196,6 +204,7 @@ class _CheckpointCreateScreenState extends State<CheckpointCreateScreen> {
       } else if (Platform.isIOS) {
         final status = await Permission.photos.request();
         if (!status.isGranted) {
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Se requieren permisos para guardar el código QR'),
@@ -214,6 +223,9 @@ class _CheckpointCreateScreenState extends State<CheckpointCreateScreen> {
         throw Exception('No se pudo capturar la imagen');
       }
 
+      // Check if widget is still mounted
+      if (!mounted) return;
+
       // Crear un archivo temporal
       final tempDir = await getTemporaryDirectory();
       final String checkpointName = _nameController.text.replaceAll(' ', '_');
@@ -222,12 +234,17 @@ class _CheckpointCreateScreenState extends State<CheckpointCreateScreen> {
       final File file = File('${tempDir.path}/$fileName');
       await file.writeAsBytes(imageBytes);
 
+      // Check if widget is still mounted
+      if (!mounted) return;
+
       // Guardar usando share plus (el usuario puede guardar desde el diálogo de compartir)
       await Share.shareXFiles(
         [XFile(file.path)],
         text: 'Código QR del checkpoint: ${_nameController.text}',
         subject: 'Security Patrol MX - Código QR para imprimir',
       );
+
+      if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -239,6 +256,8 @@ class _CheckpointCreateScreenState extends State<CheckpointCreateScreen> {
         ),
       );
     } catch (e) {
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error al procesar el código QR: $e'),
@@ -246,9 +265,11 @@ class _CheckpointCreateScreenState extends State<CheckpointCreateScreen> {
         ),
       );
     } finally {
-      setState(() {
-        _isSavingQR = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isSavingQR = false;
+        });
+      }
     }
   }
 
@@ -271,6 +292,9 @@ class _CheckpointCreateScreenState extends State<CheckpointCreateScreen> {
         throw Exception('No se pudo capturar la imagen');
       }
 
+      // Check if widget is still mounted
+      if (!mounted) return;
+
       // Crear un archivo temporal para compartir
       final tempDir = await getTemporaryDirectory();
       final String checkpointName = _nameController.text.replaceAll(' ', '_');
@@ -279,13 +303,27 @@ class _CheckpointCreateScreenState extends State<CheckpointCreateScreen> {
       final File file = File('${tempDir.path}/$fileName');
       await file.writeAsBytes(imageBytes);
 
+      // Check if widget is still mounted
+      if (!mounted) return;
+
       // Compartir el archivo
       await Share.shareXFiles(
         [XFile(file.path)],
         text: 'Código QR para el checkpoint: ${_nameController.text}',
         subject: 'Security Patrol MX - Código QR',
       );
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Código QR compartido correctamente'),
+          backgroundColor: Colors.green,
+        ),
+      );
     } catch (e) {
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error al compartir el código QR: $e'),
@@ -293,9 +331,11 @@ class _CheckpointCreateScreenState extends State<CheckpointCreateScreen> {
         ),
       );
     } finally {
-      setState(() {
-        _isSavingQR = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isSavingQR = false;
+        });
+      }
     }
   }
 
@@ -317,6 +357,9 @@ class _CheckpointCreateScreenState extends State<CheckpointCreateScreen> {
       if (imageBytes == null) {
         throw Exception('No se pudo capturar la imagen');
       }
+
+      // Check if widget is still mounted
+      if (!mounted) return;
 
       // Crear el documento PDF
       final pdf = pw.Document();
@@ -361,12 +404,17 @@ class _CheckpointCreateScreenState extends State<CheckpointCreateScreen> {
         ),
       );
 
+      // Check if widget is still mounted
+      if (!mounted) return;
+
       // Mostrar vista previa de impresión
       await Printing.layoutPdf(
         onLayout: (PdfPageFormat format) async => pdf.save(),
         name: 'Checkpoint_${_nameController.text.replaceAll(' ', '_')}.pdf',
       );
     } catch (e) {
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error al generar el PDF: $e'),
@@ -374,9 +422,11 @@ class _CheckpointCreateScreenState extends State<CheckpointCreateScreen> {
         ),
       );
     } finally {
-      setState(() {
-        _isSavingQR = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isSavingQR = false;
+        });
+      }
     }
   }
 
